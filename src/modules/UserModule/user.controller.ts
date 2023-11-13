@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Response } from 'src/common/type.response';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { Response } from 'src/utils/response.type';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -12,7 +12,7 @@ export class UserController {
   async findAll() {
     const result = await this.userService.findAll();
     return Response({
-      statusCode: HttpStatus.OK,
+      status: HttpStatus.OK,
       message: 'Find all user success.',
       result,
     });

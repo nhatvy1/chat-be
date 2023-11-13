@@ -1,17 +1,17 @@
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
+import { jwtConstants } from 'src/utils/constants';
 
 type JwtPayload = {
   id: string;
 };
 
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private config: ConfigService) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get('JWT_AIRBNB'),
+      secretOrKey: jwtConstants.secret,
     } as StrategyOptions);
   }
 
