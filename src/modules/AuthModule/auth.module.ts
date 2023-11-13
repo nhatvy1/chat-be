@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CatModule } from '../CatModule/cat.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    CatModule,
     JwtModule.register({
       global: true,
       secret: 'AIR_BNB',
