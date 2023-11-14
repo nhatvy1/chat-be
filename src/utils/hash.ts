@@ -5,7 +5,7 @@ export class Hash {
     return bcryptjs.hashSync(plainText);
   }
 
-  static comeparePassword(plainText: string, hash: string) {
-    return bcryptjs.comepareSync(plainText, hash);
+  static compare(plainText: string, hash: string) {
+    return bcryptjs.compareSync(plainText, hash);
   }
 }

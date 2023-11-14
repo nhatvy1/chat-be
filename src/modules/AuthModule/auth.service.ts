@@ -3,6 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../UserModule/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload';
+import { SignInDto } from './dto/sign-in.dto';
+import { Hash } from 'src/utils/hash';
+import { Tokens } from './interfaces/token.interface';
+import { accessToken, refreshToken } from 'src/utils/constants';
 
 @Injectable()
 export class AuthService {
@@ -11,13 +15,49 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-	generateToken(userId: number) {
-		const payload: JwtPayload = { userId }
-		return this.jwtService.sign(payload)
-	}
-	async signUp(signUpDto: SignUpDto) {
-		const user = await this.userService.createUser(signUpDto)
-		const token = this.generateToken(user.id)
-		return { user, token}
-	}
+  async generateToken(userId: number, fullName: string): Promise<Tokens> {
+    const payload: JwtPayload = { userId, fullName };
+    const [access_token, refresh_token] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: accessToken.secret,
+        expiresIn: accessToken.expiresIn,
+      }),
+      this.jwtService.signAsync(payload, {
+        secret: refreshToken.secret,
+        expiresIn: refreshToken.expiresIn,
+      }),
+    ]);
+
+    return { access_token: access_token, refresh_token: refresh_token };
+  }
+
+  refreshToken(refreshToken: any) {
+    // return this.jwtService.verify(refreshToken);
+    console.log('Check : ', refreshToken);
+    return { rt: refreshToken };
+  }
+
+  async signUp(signUpDto: SignUpDto) {
+    const user = await this.userService.createUser(signUpDto);
+    const token = this.generateToken(user.id, user.fullName);
+    return { user, token };
+  }
+
+  async signIn(signInDto: SignInDto) {
+    const user = await this.userService.getUserByEmail(signInDto.email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+    const isValidPassword = Hash.compare(signInDto.password, user.password);
+    if (!isValidPassword) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    const { access_token, refresh_token }: Tokens = await this.generateToken(
+      user.id,
+      user.fullName,
+    );
+    delete user.password;
+    return { user, access_token, refresh_token };
+  }
 }

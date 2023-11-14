@@ -12,7 +12,7 @@ export class UserController {
   async findAll() {
     const result = await this.userService.findAll();
     return Response({
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Find all user success.',
       result,
     });

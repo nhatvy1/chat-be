@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Status, User } from './user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Hash } from 'src/utils/hash';
 import { SignUpDto } from '../AuthModule/dto/sign-up.dto';
 
@@ -16,22 +16,24 @@ export class UserService {
     return result;
   }
 
-  getUserByEmail(email: string, phone: string) {
+  getUserByEmail(email: string, phone?: string) {
     return this.userRepository.findOne({
-      where: {
-        email: email,
-        phone: phone
-      },
+      where: [{ email: email }, { phone: phone }],
     });
   }
 
-  getUserByPhone(phone: string) {
-    return this.userRepository.findOneBy({ phone });
+  getUserLogin(email: string) {
+    return this.userRepository.findOne({
+      select: { password: true },
+      where: { email: email },
+    });
   }
 
   async createUser(signUpDto: SignUpDto) {
-    const foundUser = await this.getUserByEmail(signUpDto.email, signUpDto.phone);
-    console.log('Check foundUser: ', foundUser)
+    const foundUser = await this.getUserByEmail(
+      signUpDto.email,
+      signUpDto.phone,
+    );
     if (foundUser) {
       throw new ConflictException('Email or phone already in use');
     }
