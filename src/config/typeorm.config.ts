@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Role } from 'src/modules/RoleModule/role.entity';
 import { User } from 'src/modules/UserModule/user.entity';
 
 export default (): TypeOrmModuleOptions => ({
@@ -8,7 +9,7 @@ export default (): TypeOrmModuleOptions => ({
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
-  entities: [User],
+  entities: [User, Role],
   autoLoadEntities: true,
   synchronize: true,
 });

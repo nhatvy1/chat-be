@@ -6,6 +6,8 @@ import { AccessTokenStrategy } from 'src/strategy/access-token.strategy';
 import { UserModule } from '../UserModule/user.module';
 import { accessToken } from 'src/utils/constants';
 import { RefreshTokenStrategy } from 'src/strategy/refresh-token.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../UserModule/user.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { RefreshTokenStrategy } from 'src/strategy/refresh-token.strategy';
         },
       }),
     }),
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],

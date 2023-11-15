@@ -7,10 +7,14 @@ import { SignInDto } from './dto/sign-in.dto';
 import { Hash } from 'src/utils/hash';
 import { TokenVerify, Tokens } from './interfaces/token.interface';
 import { accessToken, refreshToken } from 'src/utils/constants';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../UserModule/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
@@ -41,12 +45,16 @@ export class AuthService {
 
   async signUp(signUpDto: SignUpDto) {
     const user = await this.userService.createUser(signUpDto);
-    const token = this.generateToken(user.id, user.fullName);
-    return { user, token };
+    const { access_token, refresh_token } = await this.generateToken(
+      user.id,
+      user.fullName,
+    );
+    return { user, access_token, refresh_token };
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.userService.getUserByEmail(signInDto.email);
+    const user = await this.userService.login(signInDto);
+
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }

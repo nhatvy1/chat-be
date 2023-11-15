@@ -5,7 +5,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Role } from '../RoleModule/role.entity';
 
 export enum Status {
   ACTIVE = 1,
@@ -46,4 +49,8 @@ export class User extends BaseEntity {
 
   @Column({ type: Number, enum: Status, default: Status.ACTIVE })
   status: number;
+
+  @ManyToOne(() => Role, (role) => role.id)
+  @JoinColumn({ name: 'role' })
+  role: Role;
 }
