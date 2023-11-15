@@ -5,5 +5,5 @@ export const accessToken = {
 
 export const refreshToken = {
   secret: 'refresh_token',
-  expiresIn: '20s',
+  expiresIn: '1d',
 };

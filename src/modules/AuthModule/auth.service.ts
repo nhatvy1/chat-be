@@ -5,7 +5,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { SignInDto } from './dto/sign-in.dto';
 import { Hash } from 'src/utils/hash';
-import { Tokens } from './interfaces/token.interface';
+import { TokenVerify, Tokens } from './interfaces/token.interface';
 import { accessToken, refreshToken } from 'src/utils/constants';
 
 @Injectable()
@@ -31,10 +31,12 @@ export class AuthService {
     return { access_token: access_token, refresh_token: refresh_token };
   }
 
-  refreshToken(refreshToken: any) {
-    // return this.jwtService.verify(refreshToken);
-    console.log('Check : ', refreshToken);
-    return { rt: refreshToken };
+  async refreshToken(tokenVerify: TokenVerify) {
+    const { access_token, refresh_token } = await this.generateToken(
+      tokenVerify.userId,
+      tokenVerify.fullName,
+    );
+    return { access_token, refresh_token };
   }
 
   async signUp(signUpDto: SignUpDto) {

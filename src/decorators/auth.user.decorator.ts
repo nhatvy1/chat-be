@@ -8,6 +8,6 @@ export const GetCurrentUser = createParamDecorator(
     if (!data) {
       return req.user;
     }
-    return req.user[data];
+    return req.user;
   },
 );

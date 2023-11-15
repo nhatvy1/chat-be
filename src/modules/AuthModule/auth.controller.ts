@@ -13,6 +13,7 @@ import { User } from '../UserModule/user.entity';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtRefreshGuard } from 'src/guards/jwt-auth-refresh';
 import { GetCurrentUser } from 'src/decorators/auth.user.decorator';
+import { TokenVerify } from './interfaces/token.interface';
 
 export type UserExcludePassword = Omit<User, 'password'>;
 @Controller('auth')
@@ -39,8 +40,8 @@ export class AuthController {
   @Get('refresh-token')
   refreshToken(
     @GetCurrentUser('refreshToken')
-    refreshToken: string,
+    tokenVerify: TokenVerify,
   ) {
-    return this.authService.refreshToken(refreshToken);
+    return this.authService.refreshToken(tokenVerify);
   }
 }
