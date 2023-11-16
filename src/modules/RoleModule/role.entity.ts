@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Permission } from '../PermissionModule/permission.entity';
 
 export enum RoleName {
   User = 'user',
@@ -26,13 +29,6 @@ export class Role extends BaseEntity {
 
   @Column({
     type: String,
-    default:
-      'https://res.cloudinary.com/metavere/image/upload/v1695267123/ConBo_eij0q0.png',
-  })
-  avatar: string;
-
-  @Column({
-    type: String,
     enum: RoleName,
     nullable: false,
     unique: true,
@@ -42,4 +38,10 @@ export class Role extends BaseEntity {
 
   @Column({ type: String, nullable: true })
   slug: string;
+
+  @ManyToMany(() => Permission, (permission) => permission.role, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({ name: 'role_permission' })
+  permission: Permission[];
 }
